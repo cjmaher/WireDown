@@ -1,0 +1,11 @@
+connexion
+connexion[swagger-ui]
+cors
+cx_Oracle
+flask
+flask-cors
+jaydebeapi
+numpy
+pandas
+waitress
+openpyxl

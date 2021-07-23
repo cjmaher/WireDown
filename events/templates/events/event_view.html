@@ -1,0 +1,135 @@
+{% extends "admin/base.html" %}
+{% load static i18n humanize %}
+{% block title %}Wire Down Events{% endblock %}
+
+{% block extrastyle %}
+    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}">
+    <style>
+        tr:nth-child(even) {
+            background-color: #79aec8;
+        }
+
+        #header {
+            padding: 0
+        }
+
+        table {
+            width: 90%;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        table, th, td {
+            outline-style: solid;
+            outline-width: thin;
+        }
+
+        thead th {
+            background-color: #f5dd5d;
+        }
+
+        form {
+            display: inline-block;
+            text-align: center;
+        }
+
+        input[type=post] {
+            padding: 5px 55px;
+            border: 5px none;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .submit {
+            text-align: right;
+        }
+    </style>
+{% endblock %}
+
+{% block branding %}
+    <img style="vertical-align: middle" src="{% static 'events/images/dte_logo.png' %}" alt="DTE Logo">
+    <h1 style="font-size: 28px; display: inline-block">
+        Wiredown Priority and Location Detection 'PPWD'</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        {#        <form action="{% url 'events:gen_pdf' %}" method="post">#}
+        {#            {% csrf_token %}#}
+        {#            <input type="submit" value="Download PDF">#}
+        {#        </form>#}
+        <a href="{% url 'events:gen_csv' %}">CSV</a>
+        &rsaquo; <a href="{% url 'events:gen_pdf' %}">PDF</a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <table class="sortable">
+        <thead>
+        <th>Event Number</th>
+        <th>Circuit</th>
+        <th>Service Center</th>
+        <th>TYCOD</th>
+        <th>Event Creation Time</th>
+        {#        <th>#}
+        {#            <b>#}
+        {#                <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="top" data-html="true"#}
+        {#                        title="<p>Green rows indicate Likely Non Wiredown.</p>#}
+        {#                           <p>Red rows indicate Wiredown.</p>#}
+        {#                           <p>Orange rows indicate Likely Wiredown</p>">#}
+        {#                    PRIORITY#}
+        {#                </button>#}
+        {#            </b>#}
+        {#        </th>#}
+        <th><a href="{% url 'events:tooltip' %}" style="color:#447e9b">Priority</a></th>
+        <th>AMI Alarm</th>
+        <th>Comments</th>
+        <th>CHANNEL</th>
+        <th>Location</th>
+        {#        <th>#}
+        {#            <b>#}
+        {#                <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="top" data-html="true"#}
+        {#                        title="<p>Other events open under the same circuit as the wiredown</p>">#}
+        {#                    Circuit Events#}
+        {#                </button>#}
+        {#            </b>#}
+        {#        </th>#}
+        <th>
+            <a href="{% url 'events:tooltip' %}" style="color:#447e9b">Circuit Events</a>
+        </th>
+        </thead>
+        {% for col in df.itertuples %}
+            <tr>
+                <td>
+                    <a target="_blank"
+                       href="http://pdws.soc.deco.com/EH/Data/SELUOL/chronology_new.asp?num_1=<?echo $row['NUM_1'];?>">
+                        {{ col.1 }}
+                    </a>
+                </td>
+                <td>{{ col.2 }}</td>
+                <td>{{ col.6 }}</td>
+                <td>???</td>
+                                <td>{{ col.4 }}</td>
+                {% if col.11 == 'TBD' %}
+                    <td style="color: black">{{ col.11 }}</td>
+                {% endif %}
+                {% if col.11 == 'Likely Wiredown' %}
+                    <td style="color: red">{{ col.11 }}</td>
+                {% endif %}
+                {% if col.11 == 'Likely Non Wiredown' %}
+                    <td style="color: green">{{ col.11 }}</td>
+                {% endif %}
+                {#                    <a target="_blank" href="https://dopcmapstest.dteco.com/ami-priority-wiredowns?event=<?echo $row['NUM_1'];?>">#}
+                {#                    </a>#}
+                <td>{{ col.9 }}</td>
+                <td>{{ col.7 }}</td>
+                <td>{{ col.5 }}</td>
+                <td>{{ col.12 }}</td>
+                <td>
+                    <a href="{% url 'events:events_modal' %}">{{ col.8 }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

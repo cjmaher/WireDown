@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  version: "1"
+  title: 'Wiredown Likelihood API Spec'
+  description: 'Wiredown Likelihood API Spec'
+servers:
+  - url: /
+
+paths:
+  /v1/wiredownPredictions:
+    get:
+      summary: Get curreont wiredown events and likelihood of actual wiredown
+      description: Internal endpoint for wiredown likelihood scores
+      operationId: api.class_instance.wiredown_likelihood_request
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wiredown_likelihood_response"
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server Error
+  /_ready:
+    get:
+      summary: Readiness Check
+      description: Checks whether the service is ready for requests.
+      operationId: api.class_instance.ready
+      responses:
+        200:
+          description: Service Ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetaResponse"
+        500:
+          description: Service Not Ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetaResponse"
+
+  /_health:
+    get:
+      summary: Health Check
+      description: Checks whether the service is healthy.
+      operationId: api.class_instance.health
+      responses:
+        200:
+          description: Service Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetaResponse"
+        503:
+          description: Unhealthy Service
+components:
+  schemas:
+    wiredown_likelihood_response:
+      type: object
+      properties:
+        wiredown_likelihoods:
+          type: array
+          items:
+            $ref: '#/components/schemas/wiredown_likelihood_response_item'
+    wiredown_likelihood_response_item:
+      type: object
+      properties:
+        event_number:
+          type: string
+          format: unknown
+          description: num_1 event id from agency_event table
+        circuit:
+          type: string
+          format: unknown
+          description: circuit (feeder) of reported wire down
+        service_center:
+          type: string
+          format: unknown
+          description: service center
+        event_creation_time:
+          type: string
+          format: unknown
+          description: event creation time (off_dts)
+        priority:
+          type: string
+          format: unknown
+          description: priority of incident
+        ami_alarm:
+          type: integer
+          description: count of AMI alarms (alarms field)
+        channel:
+          type: string
+          format: unknown
+          description: channel event was received from
+        location:
+          type: string
+          format: unknown
+          description: reported location of wire down event
+        circuit_events:
+          type: integer
+          description: number of circuit events
+        eid:
+          type: string
+          description: event id
+        school_park:
+          type: integer
+          description: is event near school or park
+        pf:
+          type: integer
+          description: police or fire standing by
+        pf_site:
+          type: integer
+          description: will you remain onsite until dte arrives
+        power_out:
+          type: integer
+          description: is power out
+        wires_arc:
+          type: integer
+          description: are there wires arcing
+        burn:
+          type: integer
+          description: burning observed
+        primary_wire:
+          type: integer
+          description: primary wire
+        area_taped:
+          type: integer
+          description: is area taped
+    MetaResponse:
+      type: object
+      properties:
+        requestTime:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
